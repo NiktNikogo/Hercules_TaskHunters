@@ -9,7 +9,7 @@ private:
     float maximum;
     float minimum;
 public:
-    explicit MyServo(float starting_angle, float maximum, float minimum)
+    explicit MyServo(float starting_angle, float minimum, float maximum)
         : servo(),
           angle(starting_angle),
           minimum(minimum),

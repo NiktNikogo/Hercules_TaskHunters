@@ -63,7 +63,10 @@ bool can_stepper = true;
 StepperOffset stepper_offset_state = StepperOffset::NOT_READ;
 int stepper_offset_start = 128;
 int stepper_offset_end = 128;
-int steps_buffer = 0;
+int steps_buffer = 0; 
+uint64_t stepper_delta = 1500;
+ 
+
 uint8_t rchash;
 uint8_t rclen;
 uint8_t rcid;
@@ -75,11 +78,11 @@ uint64_t servo_current;
 uint64_t servo_prev;
 uint64_t servo_delta = 30;
 const int32_t servo_closed = 108;
-const int32_t servo_opened = 91;
+const int32_t servo_opened = 80;
 
 MyServo s0(90, 0, 180);
-MyServo s1(90, 135, 45);
-MyServo s2(servo_opened, servo_closed + 1, servo_opened - 1);
+MyServo s1(90, 45, 135);
+MyServo s2(servo_opened, servo_opened -1, servo_closed + 1);
 
 int32_t servo_angles[3] = {90, 87, servo_opened};
 bool can_servo = false;
@@ -219,7 +222,6 @@ void move_stepper()
 {
   //    // 400 to obrót o 180 stopni
   const int maxRot = 400 * 43 / 10;
-  const uint64_t stepper_delta = 5000;
   int potent_corrected_value = constrain(abs(256 - potents[0]), 0, 256);
   potent_corrected_value =
       constrain(potent_corrected_value, 0, 256);
@@ -542,12 +544,12 @@ void servo()
         change_servo(ServoPins::FIRST, -1);
         //move_servo(ServoPins::FIRST, servo_angles[static_cast<size_t>(Servos::FIRST)] - 1);
       }
-      if (joy_l[0] == 1)
+      if (joy_r[0] == 1)
       {
         change_servo(ServoPins::SECOND, -1);
         //move_servo(ServoPins::SECOND, servo_angles[static_cast<size_t>(Servos::SECOND)] + 1);
       }
-      else if (joy_l[0] == 2)
+      else if (joy_r[0] == 2)
       {
         change_servo(ServoPins::SECOND, 1);
         //move_servo(ServoPins::SECOND, servo_angles[static_cast<size_t>(Servos::SECOND)] - 1);
@@ -577,14 +579,18 @@ void acctuators()
 {
   //AcctuarController _which = static_cast<AcctuarController>(which);
   //AcctuarControllerDir dir = static_cast<AcctuarControllerDir>(joy_r[1]);
-
   AcctuarDir upper_dir = static_cast<AcctuarDir>(joy_r[1]);
   AcctuarDir lower_dir = static_cast<AcctuarDir>(joy_l[1]);
-  if (!can_servo)
+  if (can_servo)
   {
+    move_acctuator(Acctuar::LOWER, lower_dir);
+  }
+  else {
     move_acctuator(Acctuar::LOWER, upper_dir);
     move_acctuator(Acctuar::UPPER, lower_dir);
   }
+  
+    
 }
 void rotate()
 {

@@ -1,5 +1,5 @@
 enum class AcctuarDirPin : uint8_t {
-  UPPER = 27, LOWER = 25
+  UPPER = 46, LOWER = 42
 };
 
 enum class AcctuarPin : uint8_t {
